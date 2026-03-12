@@ -14,9 +14,12 @@ app.add_middleware(
 @app.post("/Chat")
 async def recibir_mensaje(request:Request):
     cuerpo = await request.json()
-    mensajes= cuerpo.get("mensajes",[])
+    mensajes= cuerpo.get("menssages",[])
     if mensajes:
-        ultimo_mensaje=mensajes[-1]["content"]
-        print(f"Mensaje recibido: {ultimo_mensaje}")
+        ultimo_mensaje=mensajes[-1]
+        part=ultimo_mensaje.get("parts",[])
+        if part:
+            cont=part[0].get("text","")
+            print(f"Mensaje recibido: {cont}")
+            return "Mensaje recibido en FastApi"
 
-        return "Mensaje recibido en FastApi"
