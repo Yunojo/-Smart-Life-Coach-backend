@@ -10,7 +10,8 @@ from typing import List
 #     message: Optional[str] = None
 
 
-
+# Esquemas para Frontend
+#----------------------------------
 class MessagePart(BaseModel):
     type: str  
     text: str
@@ -25,15 +26,45 @@ class ChatPayload(BaseModel):
     id: str
     messages: List[Message]
     trigger: str
+#------------------------------------
 
 
+#Esquemas AI component
+#-----------------------------------
+class SessionItem(BaseModel):
+    day: str
+    task: str
+    duration_min: int
 
-# class CoachResponse(BaseModel):
-#     response_type: Literal["plan", "answer", "fallback"]
-#     plan_title: Optional[str] = None
-#     summary: str
-#     milestones: List[Milestone] = Field(default_factory=list)
-#     weekly_schedule: List[WeekPlan] = Field(default_factory=list)
-#     risks: List[RiskItem] = Field(default_factory=list)
-#     next_actions: List[str] = Field(default_factory=list)
-#     mesage_for_user: str
+class WeekPlan(BaseModel):
+    week: int
+    sessions: List[SessionItem]
+
+
+class Milestone(BaseModel):
+    week: int
+    target: str
+
+
+class RiskItem(BaseModel):
+    risk: str
+    mitigation: str
+
+class CoachResponse(BaseModel):
+    response_type: Literal["plan", "answer", "fallback"]
+    message_for_user: str
+    plan_title: Optional[str] = None
+    summary: str
+    milestones: List[Milestone] = Field(default_factory=list)
+    weekly_schedule: List[WeekPlan] = Field(default_factory=list)
+    risks: List[RiskItem] = Field(default_factory=list)
+    next_actions: List[str] = Field(default_factory=list)
+
+
+class ChatPayload(BaseModel):
+    id: str
+    messages: List[Message]
+    trigger: str
+    user_name: Optional[str] = None
+    age: Optional[int] = None
+#-----------------------------------
