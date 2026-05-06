@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Literal, Optional
 
 # class QueryResult(BaseModel):
 #     columns: list[str]

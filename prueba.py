@@ -33,24 +33,26 @@ async def generar_respuesta(texto: str):
     # 4. Evento de fin
     yield f'data: {{"type":"text-end","id":"{msg_id}"}}\n\n'
 
-@app.post("/Chat")
-async def recibir_mensaje(request:Request):
-    cuerpo = await request.json()
-    print(cuerpo)
-    mensajes= cuerpo.get("messages",[])
-    print(f"\n{mensajes}")
+           
+    
 
-    if mensajes:
-        ultimo_mensaje=mensajes[-1]
-        partes= ultimo_mensaje.get("parts",[])
-        if partes:
-            texto_recibido = partes[0].get("text","")
-            print(f"Mensaje recibido: {texto_recibido}")
-            url = "http://localhost:8001/recibir"
+@app.post("/Chat")
+async def recibir_mensaje(text:str):
+            print(f"Mensaje recibido: {text}")
+            url = "http://localhost:8001/chat"
             payload = ChatPayload(
                         id="123",
                         messages=[
-                            {"role": "user", "content": texto_recibido}
+                            {
+                                "id": str(uuid.uuid4()),
+                                "role": "user",
+                                "parts": [
+                                    {
+                                        "type": "text",
+                                        "text": text
+                                    }
+                                ]
+                            }
                         ],
                         trigger="chat",
                         user_name="Jose",
@@ -61,23 +63,7 @@ async def recibir_mensaje(request:Request):
             if response.status_code != 200:
                 raise HTTPException(status_code=500, detail="Error en API 2")
             coach = CoachResponse(**response.json())
-            headers = {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-            }
-
-            return StreamingResponse(
-                generar_respuesta(coach.summary),
-                headers=headers,
-                media_type="text/event-stream"
-            )
-    return StreamingResponse(
-        generar_respuesta("No detecté ningún mensaje."),
-        headers={"Content-Type": "text/event-stream"},
-        media_type="text/event-stream"
-    )
-
+            print(coach)
 
 
 ahora = datetime.now(timezone.utc).isoformat()
