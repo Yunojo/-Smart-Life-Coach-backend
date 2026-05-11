@@ -2,12 +2,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI,HTTPException, Request
 from Esquemas import ChatPayload, CoachResponse
 import asyncio
+import os
 from datetime import datetime, timezone
 import uuid
 from fastapi.responses import StreamingResponse
 import httpx
 from lab.stream_v6 import generar_respuesta_v6, STREAM_HEADERS
 from lab.crud_planes import router as planes_router
+
+# URL del AI-component (override por env var para Docker Compose). Default = comportamiento local.
+AI_COMPONENT_URL = os.getenv("AI_COMPONENT_URL", "http://localhost:8001")
 
 app = FastAPI()
 
@@ -92,7 +96,7 @@ async def recibir_mensaje(request:Request):
 
     # Intentar llamar al AI-component (puerto 8001)
     try:
-        url = "http://localhost:8001/chat"
+        url = f"{AI_COMPONENT_URL}/chat"
         # ⚠️ Cambiamos el payload para enviar TODOS los mensajes y el token
         payload = ChatPayload(
                     id=session_id,
